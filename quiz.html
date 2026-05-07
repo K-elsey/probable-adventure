@@ -41,6 +41,14 @@
             text-align: center;
             font-size: 1.2em;
             color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .accuracy-display {
+            text-align: center;
+            font-size: 1em;
+            color: #555;
             margin-bottom: 20px;
             font-weight: 600;
         }
@@ -204,6 +212,7 @@
         <h1>🤔 Quote Quiz 🤔</h1>
 
         <div class="score-display" id="scoreDisplay">Score: 0</div>
+        <div class="accuracy-display" id="accuracyDisplay">Accuracy: 0%</div>
 
         <div class="error-message" id="errorMessage"></div>
 
@@ -226,6 +235,7 @@
         let quotesCache = {};
         let hasAnswered = false;
         let score = 0;
+        let attempts = 0;
         let availableNames = ['Jaae', 'Sean']; // Will be populated with names from Brown file
         let currentCorrectName = ""; // The correct name for the current question
 
@@ -249,6 +259,24 @@
             jaae: 'Jaae',
             quote: 'Sean'
         };
+
+        function extractChatName(quote) {
+            let match = quote.match(/(?:-\s*)?([A-Za-z0-9][A-Za-z0-9 ]*?)\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2,4})$/);
+            if (match) {
+                return match[1].trim();
+            }
+            match = quote.match(/(?:-\s*)?(.+?)\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2,4})$/);
+            if (match) {
+                return match[1].trim();
+            }
+            match = quote.match(/-\s*([^\n]+)$/);
+            return match ? match[1].trim() : null;
+        }
+
+        function updateAccuracy() {
+            const accuracy = attempts === 0 ? 0 : Math.round((score / attempts) * 100);
+            document.getElementById('accuracyDisplay').textContent = `Accuracy: ${accuracy}%`;
+        }
 
         // Initialize quiz
         async function initQuiz() {
@@ -276,35 +304,10 @@
                 // Extract names from Brown quotes (multiple possible formats)
                 if (source === 'brown') {
                     quotes.forEach(quote => {
-                        let nameMatch = null;
-                        
-                        // Try different patterns in order of preference
-                        // Pattern 1: - Name Month YY (standard format)
-                        nameMatch = nameMatch || quote.match(/- ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                        
-                        // Pattern 2: - Name Month YY (with space before dash)
-                        nameMatch = nameMatch || quote.match(/\s- ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                        
-                        // Pattern 3: Name Month YY (no dash)
-                        nameMatch = nameMatch || quote.match(/([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                        
-                        // Pattern 4: - Name1 Name2 Month YY (two-part names)
-                        nameMatch = nameMatch || quote.match(/- ([A-Za-z]+) ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                        
-                        // Pattern 5: - Name1 Name2 Month YY (with space before dash)
-                        nameMatch = nameMatch || quote.match(/\s- ([A-Za-z]+) ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                        
-                        if (nameMatch) {
-                            let name = '';
-                            if (nameMatch.length === 3) {
-                                // Single name patterns
-                                name = nameMatch[1];
-                            } else if (nameMatch.length === 4) {
-                                // Two-part name patterns
-                                name = `${nameMatch[1]} ${nameMatch[2]}`;
-                            }
-                            
-                            if (name && !availableNames.includes(name)) {
+                        const extracted = extractChatName(quote);
+                        if (extracted) {
+                            const name = extracted.replace(/\s+/g, '');
+                            if (!availableNames.includes(name)) {
                                 availableNames.push(name);
                             }
                         }
@@ -342,25 +345,8 @@
 
                 // Determine the correct name based on source
                 if (currentSource === 'brown') {
-                    // Extract name from Brown quote attribution using multiple patterns
-                    let nameMatch = null;
-                    
-                    // Try different patterns in order of preference
-                    nameMatch = nameMatch || currentQuote.match(/- ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                    nameMatch = nameMatch || currentQuote.match(/\s- ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                    nameMatch = nameMatch || currentQuote.match(/([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                    nameMatch = nameMatch || currentQuote.match(/- ([A-Za-z]+) ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                    nameMatch = nameMatch || currentQuote.match(/\s- ([A-Za-z]+) ([A-Za-z]+) ([A-Za-z]{3}) \d{2}$/);
-                    
-                    if (nameMatch) {
-                        if (nameMatch.length === 3) {
-                            currentCorrectName = nameMatch[1];
-                        } else if (nameMatch.length === 4) {
-                            currentCorrectName = `${nameMatch[1]} ${nameMatch[2]}`;
-                        }
-                    } else {
-                        currentCorrectName = 'Unknown';
-                    }
+                    const extractedName = extractChatName(currentQuote);
+                    currentCorrectName = extractedName ? extractedName.replace(/\s+/g, '') : 'Chat';
                 } else if (currentSource === 'jaae') {
                     currentCorrectName = 'Jaae';
                 } else if (currentSource === 'quote') {
@@ -370,10 +356,9 @@
                 // For Brown quotes, hide the attribution (multiple possible formats)
                 let displayQuote = currentQuote;
                 if (currentSource === 'brown') {
-                    // Remove various attribution patterns
                     displayQuote = displayQuote
-                        .replace(/\s*-\s*[A-Za-z]+(?:\s+[A-Za-z]+)?\s+[A-Za-z]{3}\s+\d{2}$/, '') // - Name Month YY or - Name1 Name2 Month YY
-                        .replace(/\s*[A-Za-z]+(?:\s+[A-Za-z]+)?\s+[A-Za-z]{3}\s+\d{2}$/, ''); // Name Month YY or Name1 Name2 Month YY (no dash)
+                        .replace(/\s*-\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '')
+                        .replace(/\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '');
                 }
 
                 quoteDisplay.textContent = `"${displayQuote}"`;
@@ -388,40 +373,30 @@
             }
         }
 
-        // Generate answer options (3 random names from available pool, including correct one)
+        // Generate answer options (4 random names from available pool, including correct one)
         function generateOptions() {
             optionsContainer.innerHTML = '';
 
-            // Ensure we have enough names
-            if (availableNames.length < 3) {
-                // Fallback if we don't have enough names
-                const options = ['Jaae', 'Sean', 'Unknown'];
-                const shuffledOptions = options.sort(() => Math.random() - 0.5);
-                
-                shuffledOptions.forEach(option => {
-                    const button = document.createElement('button');
-                    button.className = 'option-btn';
-                    button.textContent = option;
-                    button.addEventListener('click', () => checkAnswer(option));
-                    optionsContainer.appendChild(button);
-                });
-                return;
+            const pool = Array.from(new Set(availableNames));
+            if (!pool.includes(currentCorrectName)) {
+                pool.push(currentCorrectName);
             }
 
-            // Create options array: correct answer + 2 random wrong answers
-            const options = [currentCorrectName];
-            
-            // Get wrong options (excluding the correct one)
-            const wrongOptions = availableNames.filter(name => name !== currentCorrectName);
-            
-            // Randomly select 2 wrong options
+            const wrongOptions = pool.filter(name => name !== currentCorrectName);
             const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5);
-            options.push(shuffledWrong[0], shuffledWrong[1]);
+            const options = [currentCorrectName];
 
-            // Shuffle the final options
+            for (let i = 0; i < 3 && i < shuffledWrong.length; i += 1) {
+                options.push(shuffledWrong[i]);
+            }
+
+            while (options.length < 4) {
+                const fallback = ['Jaae', 'Sean', 'Chat'].find(name => !options.includes(name));
+                if (!fallback) break;
+                options.push(fallback);
+            }
+
             const shuffledOptions = options.sort(() => Math.random() - 0.5);
-
-            // Create buttons
             shuffledOptions.forEach(option => {
                 const button = document.createElement('button');
                 button.className = 'option-btn';
@@ -436,6 +411,7 @@
             if (hasAnswered) return;
 
             hasAnswered = true;
+            attempts += 1;
             const correctName = currentCorrectName;
             const buttons = optionsContainer.querySelectorAll('.option-btn');
 
@@ -457,6 +433,7 @@
             }
 
             scoreDisplay.textContent = `Score: ${score}`;
+            updateAccuracy();
         }
 
         // Event listeners
