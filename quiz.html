@@ -236,6 +236,7 @@
         let hasAnswered = false;
         let score = 0;
         let attempts = 0;
+        let nextQuestionTimer = null;
         let availableNames = ['Jaae', 'Sean']; // Will be populated with names from Brown file
         let currentCorrectName = ""; // The correct name for the current question
 
@@ -261,16 +262,30 @@
         };
 
         function extractChatName(quote) {
-            let match = quote.match(/(?:-\s*)?([A-Za-z0-9][A-Za-z0-9 ]*?)\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2,4})$/);
-            if (match) {
-                return match[1].trim();
+            const monthMatch = quote.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2,4})$/);
+            if (!monthMatch) {
+                return null;
             }
-            match = quote.match(/(?:-\s*)?(.+?)\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2,4})$/);
-            if (match) {
-                return match[1].trim();
+
+            const beforeMonth = quote.slice(0, monthMatch.index).trim();
+            const afterDash = beforeMonth.includes('-')
+                ? beforeMonth.substring(beforeMonth.lastIndexOf('-') + 1).trim()
+                : beforeMonth;
+
+            const nameCandidate = afterDash.replace(/\s+/g, ' ').trim();
+            if (/^[A-Za-z0-9][A-Za-z0-9 ]*$/.test(nameCandidate)) {
+                return nameCandidate;
             }
-            match = quote.match(/-\s*([^\n]+)$/);
-            return match ? match[1].trim() : null;
+
+            const tokens = beforeMonth.split(/\s+/);
+            for (let len = Math.min(3, tokens.length); len > 0; len--) {
+                const candidate = tokens.slice(-len).join(' ');
+                if (/^[A-Za-z0-9][A-Za-z0-9 ]*$/.test(candidate)) {
+                    return candidate;
+                }
+            }
+
+            return null;
         }
 
         function updateAccuracy() {
@@ -324,6 +339,11 @@
 
         // Load next question
         async function loadNextQuestion() {
+            if (nextQuestionTimer) {
+                clearTimeout(nextQuestionTimer);
+                nextQuestionTimer = null;
+            }
+
             hasAnswered = false;
             resultMessage.textContent = '';
             resultMessage.className = 'result-message';
@@ -434,10 +454,22 @@
 
             scoreDisplay.textContent = `Score: ${score}`;
             updateAccuracy();
+
+            nextQuestionTimer = setTimeout(() => {
+                loadNextQuestion();
+            }, 2000);
         }
 
         // Event listeners
-        nextBtn.addEventListener('click', loadNextQuestion);
+        nextBtn.addEventListener('click', () => {
+            if (!hasAnswered) {
+                attempts += 1;
+                resultMessage.textContent = '⚠️ Skipped question. Accuracy adjusted.';
+                resultMessage.className = 'result-message incorrect';
+                updateAccuracy();
+            }
+            loadNextQuestion();
+        });
         backBtn.addEventListener('click', () => {
             window.close();
         });
