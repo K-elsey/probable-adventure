@@ -223,8 +223,8 @@
         <div class="result-message" id="resultMessage"></div>
 
         <div class="button-group">
-            <button class="back-btn" id="backBtn">Back to Generator</button>
-            <button class="next-btn" id="nextBtn">Next Question</button>
+            <button type="button" class="back-btn" id="backBtn">Back to Generator</button>
+            <button type="button" class="next-btn" id="nextBtn">Next Question</button>
         </div>
     </div>
 
@@ -471,7 +471,7 @@
             loadNextQuestion();
         });
         backBtn.addEventListener('click', () => {
-            window.location.href = 'index.html';
+            window.location.assign('index.html');
         });
 
         // Initialize when page loads
