@@ -341,10 +341,44 @@
 
         // Set up checkbox listeners
         checkboxes.forEach(cb => {
-            cb.addEventListener('change', updateSelectedSources);
+            cb.addEventListener('change', () => {
+                updateSelectedSources();
+                saveState();
+            });
         });
 
+        function loadSavedState() {
+            const savedState = localStorage.getItem('quoteGeneratorState');
+            if (!savedState) return;
+
+            try {
+                const state = JSON.parse(savedState);
+                if (Array.isArray(state.selectedSources) && state.selectedSources.length > 0) {
+                    checkboxes.forEach(cb => {
+                        cb.checked = state.selectedSources.includes(cb.dataset.source);
+                    });
+                }
+                if (typeof state.currentQuote === 'string' && state.currentQuote.trim().length > 0) {
+                    currentQuote = state.currentQuote;
+                    quoteDisplay.textContent = currentQuote;
+                    quoteDisplay.classList.remove('empty');
+                    copyBtn.disabled = false;
+                }
+            } catch (error) {
+                console.warn('Unable to restore saved quote generator state:', error);
+            }
+        }
+
+        function saveState() {
+            const state = {
+                selectedSources,
+                currentQuote
+            };
+            localStorage.setItem('quoteGeneratorState', JSON.stringify(state));
+        }
+
         // Initialize
+        loadSavedState();
         updateSelectedSources();
 
         // Fetch quotes from GitHub
@@ -391,6 +425,7 @@
                 quoteDisplay.textContent = currentQuote;
                 quoteDisplay.classList.remove('empty');
                 copyBtn.disabled = false;
+                saveState();
             } catch (error) {
                 quoteDisplay.textContent = '';
                 quoteDisplay.classList.add('empty');
@@ -415,8 +450,8 @@
 
         // Quiz button listener
         quizBtn.addEventListener('click', () => {
-            // Open quiz page (quiz will use all 3 sources)
-            window.open('quiz.html', '_blank');
+            saveState();
+            window.location.href = 'quiz.html';
         });
 
         // Allow Enter key to fetch quote
