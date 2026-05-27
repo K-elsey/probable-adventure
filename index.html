@@ -19,6 +19,61 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #222;
+        }
+
+        body.old-school {
+            background: radial-gradient(circle at top left, #7d6b3d 0%, #1b2d1f 40%, #0c1a11 100%);
+            color: #f3e8c8;
+        }
+
+        body.old-school .container {
+            background: #1f2918;
+            border: 2px solid #7d6f3d;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        }
+
+        .top-nav {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.18);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        body.old-school .top-nav {
+            background: rgba(15, 18, 10, 0.88);
+            border-color: rgba(157, 143, 99, 0.4);
+        }
+
+        .nav-title {
+            font-size: 1em;
+            font-weight: 700;
+        }
+
+        .theme-btn {
+            padding: 10px 16px;
+            background: #ffffff;
+            border: 2px solid #d0d7ff;
+            color: #2a3f7d;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .theme-btn:hover {
+            background: #e9efff;
+        }
+
+        body.old-school .theme-btn {
+            background: #3f422e;
+            border-color: #5e5b3a;
+            color: #e8d8a8;
         }
 
         .container {
@@ -239,6 +294,10 @@
     </style>
 </head>
 <body>
+    <div class="top-nav">
+        <div class="nav-title">Quote Generator</div>
+        <button type="button" class="theme-btn" id="themeToggleBtn">Old School</button>
+    </div>
     <div class="container">
         <h1>✨ Quote Generator ✨</h1>
 
@@ -267,7 +326,7 @@
         </div>
 
         <div class="button-group">
-            <button class="quiz-btn" id="quizBtn" disabled>Take Quiz</button>
+            <button type="button" class="quiz-btn" id="quizBtn" disabled>Take Quiz</button>
         </div>
 
         <div class="source-label" id="sourceLabel">Selected: Brown</div>
@@ -285,6 +344,7 @@
         const quoteDisplay = document.getElementById('quoteDisplay');
         const errorMessage = document.getElementById('errorMessage');
         const sourceLabel = document.getElementById('sourceLabel');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
 
         // Map source names to GitHub URLs
         const sourceUrls = {
@@ -377,6 +437,23 @@
             localStorage.setItem('quoteGeneratorState', JSON.stringify(state));
         }
 
+        function loadTheme() {
+            const storedTheme = localStorage.getItem('quizTheme');
+            if (storedTheme === 'old-school') {
+                document.body.classList.add('old-school');
+                themeToggleBtn.textContent = 'Classic';
+            } else {
+                document.body.classList.remove('old-school');
+                themeToggleBtn.textContent = 'Old School';
+            }
+        }
+
+        function toggleTheme() {
+            const nowOldSchool = document.body.classList.toggle('old-school');
+            localStorage.setItem('quizTheme', nowOldSchool ? 'old-school' : 'default');
+            themeToggleBtn.textContent = nowOldSchool ? 'Classic' : 'Old School';
+        }
+
         // Initialize
         loadSavedState();
         updateSelectedSources();
@@ -453,6 +530,10 @@
             saveState();
             window.location.href = 'quiz.html';
         });
+
+        themeToggleBtn.addEventListener('click', toggleTheme);
+
+        loadTheme();
 
         // Allow Enter key to fetch quote
         document.addEventListener('keypress', (e) => {

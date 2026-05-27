@@ -11,93 +11,279 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: #222;
             padding: 20px;
+        }
+
+        body.old-school {
+            background: radial-gradient(circle at top left, #7d6b3d 0%, #1b2d1f 40%, #0c1a11 100%);
+            color: #f2e6c8;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 940px;
+            margin: 0 auto 20px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        body.old-school .top-nav {
+            background: rgba(15, 18, 10, 0.88);
+            border-color: rgba(157, 143, 99, 0.4);
+        }
+
+        .nav-title {
+            font-size: 1.15em;
+            font-weight: 700;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .theme-btn,
+        .mode-btn,
+        .next-btn,
+        .back-btn {
+            transition: all 0.2s ease;
         }
 
         .container {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 700px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+            padding: 30px;
+            max-width: 940px;
             width: 100%;
+            margin: 0 auto;
         }
 
-        h1 {
-            text-align: center;
+        body.old-school .container {
+            background: #1f2b18;
+            border: 2px solid #867148;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .mode-menu {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .mode-btn {
+            padding: 12px 18px;
+            background: #f1f5ff;
+            border: 2px solid #d0d7ff;
+            border-radius: 999px;
+            color: #2a3f7d;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #5d6fdf;
+        }
+
+        body.old-school .mode-btn {
+            background: #3f422e;
+            border-color: #5e5b3a;
+            color: #e8d8a8;
+        }
+
+        body.old-school .mode-btn.active {
+            background: linear-gradient(135deg, #7c682d 0%, #b79f5b 100%);
+            color: #232112;
+            border-color: #d2c08d;
+        }
+
+        .progress-panel {
+            margin-bottom: 22px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .session-info {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .score-display,
+        .accuracy-display,
+        .timer-display {
+            font-size: 1rem;
+            font-weight: 700;
             color: #333;
-            margin-bottom: 20px;
-            font-size: 2.5em;
         }
 
-        .score-display {
-            text-align: center;
-            font-size: 1.2em;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 600;
+        body.old-school .score-display,
+        body.old-school .accuracy-display,
+        body.old-school .timer-display {
+            color: #f9eed1;
         }
 
-        .accuracy-display {
-            text-align: center;
-            font-size: 1em;
-            color: #555;
-            margin-bottom: 20px;
-            font-weight: 600;
+        .timer-display {
+            font-size: 0.95rem;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            border-radius: 999px;
+            background: #e9ecef;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .progress-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f1f3f5;
+            border: 2px solid #ced4da;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #6c757d;
+        }
+
+        .progress-dot.correct {
+            background: #28a745;
+            border-color: #1e7e34;
+            color: white;
+        }
+
+        .progress-dot.incorrect {
+            background: #dc3545;
+            border-color: #b02a37;
+            color: white;
+        }
+
+        body.old-school .progress-bar {
+            background: #3c3a2d;
+        }
+
+        body.old-school .progress-fill {
+            background: linear-gradient(90deg, #9c7b30 0%, #d8c47e 100%);
+        }
+
+        body.old-school .progress-dot {
+            background: #46432d;
+            border-color: #746b4c;
+            color: #d6c89b;
+        }
+
+        body.old-school .progress-dot.correct {
+            background: #4c7f3d;
+            border-color: #7bb162;
+        }
+
+        body.old-school .progress-dot.incorrect {
+            background: #702525;
+            border-color: #ad5b5b;
         }
 
         .quote-display {
-            background: #f9f9f9;
+            background: #f8f9ff;
             border-left: 4px solid #667eea;
             padding: 25px;
-            margin: 30px 0;
-            border-radius: 8px;
+            border-radius: 12px;
             min-height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.1em;
             line-height: 1.6;
-            color: #333;
+            color: #1d253b;
             text-align: center;
             font-style: italic;
+            transition: background 0.3s ease;
         }
 
         .quote-display.loading::before {
             content: "Loading quote...";
-            color: #999;
+            color: #7d8fa7;
+        }
+
+        body.old-school .quote-display {
+            background: #232b19;
+            border-left-color: #a68f4c;
+            color: #f8eec6;
+            font-style: normal;
         }
 
         .options-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 15px;
             margin: 30px 0;
         }
 
         .option-btn {
-            padding: 15px 20px;
+            padding: 16px 20px;
             background: white;
             border: 2px solid #e9ecef;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            min-height: 62px;
             text-align: center;
+            color: #1f2530;
         }
 
         .option-btn:hover {
-            background: #f8f9fa;
+            background: #f2f5ff;
             border-color: #667eea;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .option-btn.correct {
@@ -112,6 +298,41 @@
             border-color: #dc3545;
         }
 
+        body.old-school .option-btn {
+            background: #2b321d;
+            border-color: #57664b;
+            color: #efe6bb;
+        }
+
+        body.old-school .option-btn:hover {
+            background: #3d4629;
+            border-color: #8c8b61;
+        }
+
+        body.old-school .option-btn.correct {
+            background: #3e7632;
+            border-color: #9bc17e;
+        }
+
+        body.old-school .option-btn.incorrect {
+            background: #8c2d2d;
+            border-color: #d16767;
+        }
+
+        .theme-btn {
+            padding: 10px 16px;
+            background: #ffffff;
+            border: 2px solid #d0d7ff;
+            color: #2a3f7d;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .theme-btn:hover {
+            background: #e9efff;
+        }
+
         .button-group {
             display: flex;
             gap: 15px;
@@ -119,42 +340,43 @@
             flex-wrap: wrap;
         }
 
-        .next-btn, .back-btn {
+        .next-btn,
+        .back-btn {
             padding: 14px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
+            font-size: 1.05em;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.25);
         }
 
-        .next-btn:hover, .back-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        .next-btn:hover,
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(102, 126, 234, 0.3);
         }
 
-        .next-btn:active, .back-btn:active {
-            transform: translateY(-1px);
+        .next-btn:disabled,
+        .theme-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .back-btn {
             background: #6c757d;
-            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
-        }
-
-        .back-btn:hover {
-            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
         }
 
         .result-message {
             text-align: center;
             margin: 20px 0;
             font-size: 1.2em;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .result-message.correct {
@@ -163,6 +385,42 @@
 
         .result-message.incorrect {
             color: #dc3545;
+        }
+
+        .final-screen {
+            text-align: center;
+            margin: 30px 0;
+            padding: 22px 18px;
+            border-radius: 12px;
+            background: #f0f4ff;
+            border: 1px solid #d7e0ff;
+        }
+
+        body.old-school .final-screen {
+            background: rgba(40, 42, 28, 0.86);
+            border-color: #6f6b4a;
+        }
+
+        .final-title {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .final-score,
+        .final-summary {
+            margin-bottom: 12px;
+            font-size: 1.05em;
+            color: #333;
+        }
+
+        body.old-school .final-score,
+        body.old-school .final-summary {
+            color: #f7e9c3;
+        }
+
+        .final-screen.hidden {
+            display: none;
         }
 
         .error-message {
@@ -178,19 +436,27 @@
             display: block;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 800px) {
             .container {
-                padding: 20px;
+                padding: 22px;
             }
 
-            h1 {
-                font-size: 1.8em;
+            .mode-menu {
+                justify-content: center;
             }
 
-            .score-display {
-                font-size: 1em;
+            .progress-info {
+                flex-direction: column;
+                align-items: stretch;
             }
 
+            .timer-display {
+                text-align: left;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
             .quote-display {
                 min-height: 100px;
                 font-size: 1em;
@@ -202,43 +468,74 @@
             }
 
             .option-btn {
-                padding: 12px 15px;
+                padding: 14px 16px;
+            }
+
+            .top-nav,
+            .container {
+                padding-left: 16px;
+                padding-right: 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🤔 Quote Quiz 🤔</h1>
+    <div class="top-nav">
+        <div class="nav-title">Quote Quiz</div>
+        <div class="nav-actions">
+            <button type="button" class="theme-btn" id="themeToggleBtn">Old School</button>
+        </div>
+    </div>
 
-        <div class="score-display" id="scoreDisplay">Score: 0</div>
-        <div class="accuracy-display" id="accuracyDisplay">Accuracy: 0%</div>
+    <div class="container">
+        <div class="mode-menu" id="modeMenu"></div>
+
+        <div class="progress-panel">
+            <div class="progress-info">
+                <div class="session-info">
+                    <div class="score-display" id="scoreDisplay">Score: 0/10</div>
+                    <div class="accuracy-display" id="accuracyDisplay">Accuracy: 0%</div>
+                </div>
+                <div class="timer-display" id="timerDisplay"></div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-dots" id="progressDots"></div>
+        </div>
 
         <div class="error-message" id="errorMessage"></div>
-
         <div class="quote-display loading" id="quoteDisplay"></div>
-
         <div class="options-container" id="optionsContainer"></div>
-
         <div class="result-message" id="resultMessage"></div>
+
+        <div class="final-screen hidden" id="finalScreen">
+            <div class="final-title">Quiz Complete</div>
+            <div class="final-score" id="finalScore"></div>
+            <div class="final-summary" id="finalSummary"></div>
+            <button type="button" class="next-btn" id="restartBtn">Restart Quiz</button>
+        </div>
 
         <div class="button-group">
             <button type="button" class="back-btn" id="backBtn">Back to Generator</button>
-            <button type="button" class="next-btn" id="nextBtn">Next Question</button>
+            <button type="button" class="next-btn" id="nextBtn" disabled>Next Question</button>
         </div>
     </div>
 
     <script>
-        let currentQuote = "";
-        let currentSource = "";
-        let selectedSources = ['brown', 'jaae', 'quote']; // Always use all 3 sources
+        const maxQuestions = 10;
+        let currentModeId = 'allCommands';
+        let currentQuestionIndex = 0;
+        let currentQuote = '';
+        let currentSource = '';
+        let currentCorrectAnswer = '';
         let quotesCache = {};
         let hasAnswered = false;
         let score = 0;
         let attempts = 0;
-        let nextQuestionTimer = null;
-        let availableNames = ['Jaae', 'Sean']; // Will be populated with names from Brown file
-        let currentCorrectName = ""; // The correct name for the current question
+        let questionTimer = null;
+        let countdownInterval = null;
+        let availableNames = ['Jaae', 'Sean'];
 
         const quoteDisplay = document.getElementById('quoteDisplay');
         const optionsContainer = document.getElementById('optionsContainer');
@@ -247,8 +544,17 @@
         const nextBtn = document.getElementById('nextBtn');
         const backBtn = document.getElementById('backBtn');
         const scoreDisplay = document.getElementById('scoreDisplay');
+        const accuracyDisplay = document.getElementById('accuracyDisplay');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const modeMenu = document.getElementById('modeMenu');
+        const progressDots = document.getElementById('progressDots');
+        const progressFill = document.getElementById('progressFill');
+        const finalScreen = document.getElementById('finalScreen');
+        const finalScore = document.getElementById('finalScore');
+        const finalSummary = document.getElementById('finalSummary');
+        const restartBtn = document.getElementById('restartBtn');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-        // Map source names to GitHub URLs
         const sourceUrls = {
             brown: 'https://raw.githubusercontent.com/K-elsey/probable-adventure/main/Brown',
             jaae: 'https://raw.githubusercontent.com/K-elsey/probable-adventure/main/Jaae',
@@ -261,11 +567,31 @@
             quote: 'Sean'
         };
 
+        const quizModes = {
+            chatters: {
+                id: 'chatters',
+                label: 'Chatters quiz',
+                sources: ['brown'],
+                type: 'multipleChoice'
+            },
+            allCommands: {
+                id: 'allCommands',
+                label: 'All commands quiz',
+                sources: ['brown', 'jaae', 'quote'],
+                type: 'multipleChoice'
+            },
+            speed: {
+                id: 'speed',
+                label: 'Speed quiz',
+                sources: ['brown'],
+                type: 'speed',
+                timeLimit: 5
+            }
+        };
+
         function extractChatName(quote) {
             const monthMatch = quote.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2,4})$/);
-            if (!monthMatch) {
-                return null;
-            }
+            if (!monthMatch) return null;
 
             const beforeMonth = quote.slice(0, monthMatch.index).trim();
             const afterDash = beforeMonth.includes('-')
@@ -288,18 +614,132 @@
             return null;
         }
 
-        function updateAccuracy() {
+        function normalizeName(name) {
+            return name ? name.replace(/\s+/g, '') : name;
+        }
+
+        function loadTheme() {
+            const storedTheme = localStorage.getItem('quizTheme');
+            if (storedTheme === 'old-school') {
+                document.body.classList.add('old-school');
+                themeToggleBtn.textContent = 'Classic';
+            } else {
+                document.body.classList.remove('old-school');
+                themeToggleBtn.textContent = 'Old School';
+            }
+        }
+
+        function toggleTheme() {
+            const nowOldSchool = document.body.classList.toggle('old-school');
+            localStorage.setItem('quizTheme', nowOldSchool ? 'old-school' : 'default');
+            themeToggleBtn.textContent = nowOldSchool ? 'Classic' : 'Old School';
+        }
+
+        function buildModeMenu() {
+            modeMenu.innerHTML = '';
+            Object.values(quizModes).forEach(mode => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'mode-btn';
+                button.textContent = mode.label;
+                button.dataset.mode = mode.id;
+                button.addEventListener('click', () => selectMode(mode.id));
+                if (mode.id === currentModeId) {
+                    button.classList.add('active');
+                }
+                modeMenu.appendChild(button);
+            });
+        }
+
+        function selectMode(modeId) {
+            if (!quizModes[modeId] || currentModeId === modeId) return;
+            currentModeId = modeId;
+            startQuiz();
+        }
+
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = `Score: ${score}/${maxQuestions}`;
             const accuracy = attempts === 0 ? 0 : Math.round((score / attempts) * 100);
-            document.getElementById('accuracyDisplay').textContent = `Accuracy: ${accuracy}%`;
+            accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
         }
 
-        // Initialize quiz
+        function createProgressDots() {
+            progressDots.innerHTML = '';
+            for (let i = 0; i < maxQuestions; i += 1) {
+                const dot = document.createElement('span');
+                dot.className = 'progress-dot';
+                dot.textContent = i + 1;
+                progressDots.appendChild(dot);
+            }
+            progressFill.style.width = '0%';
+        }
+
+        function markProgress(correct) {
+            const dot = progressDots.children[currentQuestionIndex];
+            if (!dot) return;
+            dot.classList.add(correct ? 'correct' : 'incorrect');
+            const fillPercent = ((currentQuestionIndex + 1) / maxQuestions) * 100;
+            progressFill.style.width = `${fillPercent}%`;
+        }
+
         async function initQuiz() {
-            // Always use all 3 sources for the quiz
-            await loadNextQuestion();
+            loadTheme();
+            currentModeId = getModeFromQuery() || currentModeId;
+            buildModeMenu();
+            startQuiz();
         }
 
-        // Fetch quotes from GitHub
+        function getModeFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const mode = params.get('mode');
+            return quizModes[mode] ? mode : null;
+        }
+
+        function clearTimers() {
+            if (questionTimer) {
+                clearTimeout(questionTimer);
+                questionTimer = null;
+            }
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+        }
+
+        function setTimerDisplay(text) {
+            timerDisplay.textContent = text;
+        }
+
+        function showFinalScreen() {
+            finalScore.textContent = `Final score: ${score}/${maxQuestions} (${Math.round((score / maxQuestions) * 100)}%)`;
+            finalSummary.textContent = `You answered ${score} out of ${maxQuestions} correctly.`;
+            finalScreen.classList.remove('hidden');
+            optionsContainer.innerHTML = '';
+            quoteDisplay.textContent = '';
+            nextBtn.disabled = true;
+            setTimerDisplay('');
+        }
+
+        function hideFinalScreen() {
+            finalScreen.classList.add('hidden');
+        }
+
+        function startQuiz() {
+            clearTimers();
+            currentQuestionIndex = 0;
+            score = 0;
+            attempts = 0;
+            hasAnswered = false;
+            resultMessage.textContent = '';
+            resultMessage.className = 'result-message';
+            errorMessage.classList.remove('show');
+            hideFinalScreen();
+            buildModeMenu();
+            createProgressDots();
+            updateScoreDisplay();
+            loadNextQuestion();
+        }
+
         async function fetchQuotes(source) {
             if (quotesCache[source]) {
                 return quotesCache[source];
@@ -316,14 +756,13 @@
                     .map(q => q.trim())
                     .filter(q => q.length > 0);
 
-                // Extract names from Brown quotes (multiple possible formats)
                 if (source === 'brown') {
                     quotes.forEach(quote => {
                         const extracted = extractChatName(quote);
                         if (extracted) {
-                            const name = extracted.replace(/\s+/g, '');
-                            if (!availableNames.includes(name)) {
-                                availableNames.push(name);
+                            const normalized = normalizeName(extracted);
+                            if (!availableNames.includes(normalized)) {
+                                availableNames.push(normalized);
                             }
                         }
                     });
@@ -337,74 +776,76 @@
             }
         }
 
-        // Load next question
         async function loadNextQuestion() {
-            if (nextQuestionTimer) {
-                clearTimeout(nextQuestionTimer);
-                nextQuestionTimer = null;
-            }
-
+            clearTimers();
             hasAnswered = false;
             resultMessage.textContent = '';
             resultMessage.className = 'result-message';
             errorMessage.classList.remove('show');
+            nextBtn.disabled = true;
+            setTimerDisplay('');
+
+            if (currentQuestionIndex >= maxQuestions) {
+                showFinalScreen();
+                return;
+            }
+
+            const mode = quizModes[currentModeId];
+            if (!mode) {
+                showError('Quiz mode not found.');
+                return;
+            }
 
             try {
-                // Randomly select a source
-                currentSource = selectedSources[Math.floor(Math.random() * selectedSources.length)];
-
-                // Get quotes from that source
-                const quotes = await fetchQuotes(currentSource);
-
-                if (quotes.length === 0) {
-                    throw new Error('No quotes found');
+                if (mode.type === 'speed') {
+                    await renderSpeedQuestion(mode);
+                } else {
+                    await renderMultipleChoiceQuestion(mode);
                 }
-
-                // Select random quote
-                currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
-
-                // Determine the correct name based on source
-                if (currentSource === 'brown') {
-                    const extractedName = extractChatName(currentQuote);
-                    currentCorrectName = extractedName ? extractedName.replace(/\s+/g, '') : 'Chat';
-                } else if (currentSource === 'jaae') {
-                    currentCorrectName = 'Jaae';
-                } else if (currentSource === 'quote') {
-                    currentCorrectName = 'Sean';
-                }
-
-                // For Brown quotes, hide the attribution (multiple possible formats)
-                let displayQuote = currentQuote;
-                if (currentSource === 'brown') {
-                    displayQuote = displayQuote
-                        .replace(/\s*-\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '')
-                        .replace(/\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '');
-                }
-
-                quoteDisplay.textContent = `"${displayQuote}"`;
-                quoteDisplay.classList.remove('loading');
-
-                // Generate options
-                generateOptions();
-
             } catch (error) {
-                quoteDisplay.textContent = 'Error loading quote';
+                quoteDisplay.textContent = 'Error loading question';
                 quoteDisplay.classList.add('loading');
             }
         }
 
-        // Generate answer options (4 random names from available pool, including correct one)
-        function generateOptions() {
-            optionsContainer.innerHTML = '';
+        function getCleanQuoteText(rawQuote) {
+            let text = rawQuote;
+            text = text.replace(/\s*-\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '');
+            text = text.replace(/\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '');
+            return text.trim();
+        }
 
-            const pool = Array.from(new Set(availableNames));
-            if (!pool.includes(currentCorrectName)) {
-                pool.push(currentCorrectName);
+        async function renderMultipleChoiceQuestion(mode) {
+            currentSource = mode.sources[Math.floor(Math.random() * mode.sources.length)];
+            const quotes = await fetchQuotes(currentSource);
+            if (quotes.length === 0) {
+                throw new Error('No quotes available');
             }
 
-            const wrongOptions = pool.filter(name => name !== currentCorrectName);
+            currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            if (currentSource === 'brown') {
+                const extractedName = extractChatName(currentQuote);
+                currentCorrectAnswer = normalizeName(extractedName || 'Chat');
+            } else {
+                currentCorrectAnswer = currentSource === 'jaae' ? 'Jaae' : 'Sean';
+            }
+
+            const displayQuote = currentSource === 'brown' ? getCleanQuoteText(currentQuote) : currentQuote;
+            quoteDisplay.textContent = `"${displayQuote}"`;
+            quoteDisplay.classList.remove('loading');
+            const options = buildNameOptions(currentCorrectAnswer);
+            generateOptions(mode.type, options, currentCorrectAnswer);
+        }
+
+        function buildNameOptions(correctName) {
+            const pool = Array.from(new Set(availableNames));
+            if (!pool.includes(correctName)) {
+                pool.push(correctName);
+            }
+
+            const wrongOptions = pool.filter(name => name !== correctName);
             const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5);
-            const options = [currentCorrectName];
+            const options = [correctName];
 
             for (let i = 0; i < 3 && i < shuffledWrong.length; i += 1) {
                 options.push(shuffledWrong[i]);
@@ -416,9 +857,48 @@
                 options.push(fallback);
             }
 
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        async function renderSpeedQuestion(mode) {
+            const quotes = await fetchQuotes('brown');
+            if (quotes.length === 0 || availableNames.length === 0) {
+                throw new Error('No speed quiz data available');
+            }
+
+            const names = availableNames.slice();
+            currentCorrectAnswer = names[Math.floor(Math.random() * names.length)];
+            const correctQuotes = quotes.filter(q => normalizeName(extractChatName(q)) === currentCorrectAnswer);
+            if (correctQuotes.length === 0) {
+                currentCorrectAnswer = normalizeName(extractChatName(quotes[0])) || 'Chat';
+            }
+
+            const chosenCorrectQuote = correctQuotes.length > 0
+                ? correctQuotes[Math.floor(Math.random() * correctQuotes.length)]
+                : quotes[Math.floor(Math.random() * quotes.length)];
+            const wrongQuote = selectDistractorQuote(quotes, chosenCorrectQuote);
+
+            currentQuote = getCleanQuoteText(chosenCorrectQuote);
+            quoteDisplay.textContent = `Which quote was said by ${currentCorrectAnswer}?`;
+            quoteDisplay.classList.remove('loading');
+            generateOptions(mode.type, [currentQuote, getCleanQuoteText(wrongQuote)], currentQuote);
+            beginCountdown(mode.timeLimit);
+        }
+
+        function selectDistractorQuote(quotes, correctQuote) {
+            const wrongQuotes = quotes.filter(q => q !== correctQuote && normalizeName(extractChatName(q)) !== currentCorrectAnswer);
+            if (wrongQuotes.length === 0) {
+                return quotes.find(q => q !== correctQuote) || correctQuote;
+            }
+            return wrongQuotes[Math.floor(Math.random() * wrongQuotes.length)];
+        }
+
+        function generateOptions(type, options, correctAnswer) {
+            optionsContainer.innerHTML = '';
             const shuffledOptions = options.sort(() => Math.random() - 0.5);
             shuffledOptions.forEach(option => {
                 const button = document.createElement('button');
+                button.type = 'button';
                 button.className = 'option-btn';
                 button.textContent = option;
                 button.addEventListener('click', () => checkAnswer(option));
@@ -426,58 +906,100 @@
             });
         }
 
-        // Check answer
-        function checkAnswer(selectedName) {
-            if (hasAnswered) return;
+        function beginCountdown(seconds) {
+            setTimerDisplay(`Time left: ${seconds}s`);
+            let remaining = seconds;
+            countdownInterval = setInterval(() => {
+                remaining -= 1;
+                setTimerDisplay(`Time left: ${remaining}s`);
+                if (remaining <= 0) {
+                    clearTimers();
+                    if (!hasAnswered) {
+                        handleTimeout();
+                    }
+                }
+            }, 1000);
+            questionTimer = setTimeout(() => {
+                clearTimers();
+                if (!hasAnswered) {
+                    handleTimeout();
+                }
+            }, seconds * 1000);
+        }
 
+        function handleTimeout() {
             hasAnswered = true;
             attempts += 1;
-            const correctName = currentCorrectName;
+            resultMessage.textContent = '⏱️ Time is up!';
+            resultMessage.classList.add('incorrect');
             const buttons = optionsContainer.querySelectorAll('.option-btn');
-
             buttons.forEach(btn => {
-                if (btn.textContent === correctName) {
+                if (btn.textContent === currentQuote) {
                     btn.classList.add('correct');
-                } else if (btn.textContent === selectedName && selectedName !== correctName) {
+                }
+            });
+            markProgress(false);
+            updateScoreDisplay();
+            currentQuestionIndex += 1;
+            if (currentQuestionIndex >= maxQuestions) {
+                setTimeout(showFinalScreen, 1200);
+                return;
+            }
+            nextBtn.disabled = false;
+        }
+
+        function checkAnswer(selectedOption) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+            clearTimers();
+            attempts += 1;
+            const isCorrect = selectedOption === currentCorrectAnswer || selectedOption === currentQuote;
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent === currentCorrectAnswer || btn.textContent === currentQuote) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent === selectedOption && !isCorrect) {
                     btn.classList.add('incorrect');
                 }
             });
 
-            if (selectedName === correctName) {
+            if (isCorrect) {
                 score += 1;
                 resultMessage.textContent = '✅ Correct! +1 point';
                 resultMessage.classList.add('correct');
+                markProgress(true);
             } else {
-                resultMessage.textContent = `❌ Incorrect! The correct answer is ${correctName}`;
+                resultMessage.textContent = quizModes[currentModeId].type === 'speed'
+                    ? `❌ Incorrect! The right quote was highlighted.`
+                    : `❌ Incorrect! The correct answer is ${currentCorrectAnswer}`;
                 resultMessage.classList.add('incorrect');
+                markProgress(false);
             }
 
-            scoreDisplay.textContent = `Score: ${score}`;
-            updateAccuracy();
-
-            nextQuestionTimer = setTimeout(() => {
-                loadNextQuestion();
-            }, 2000);
+            updateScoreDisplay();
+            currentQuestionIndex += 1;
+            if (currentQuestionIndex >= maxQuestions) {
+                setTimeout(showFinalScreen, 1200);
+                return;
+            }
+            nextBtn.disabled = false;
         }
 
-        // Event listeners
         nextBtn.addEventListener('click', () => {
-            if (!hasAnswered) {
-                attempts += 1;
-                resultMessage.textContent = '⚠️ Skipped question. Accuracy adjusted.';
-                resultMessage.className = 'result-message incorrect';
-                updateAccuracy();
+            if (hasAnswered) {
+                loadNextQuestion();
             }
-            loadNextQuestion();
         });
+
         backBtn.addEventListener('click', () => {
             window.location.assign('index.html');
         });
 
-        // Initialize when page loads
+        restartBtn.addEventListener('click', startQuiz);
+        themeToggleBtn.addEventListener('click', toggleTheme);
+
         window.addEventListener('load', initQuiz);
 
-        // Show error message
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
