@@ -16,7 +16,8 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
             padding: 20px;
             color: #222;
@@ -31,6 +32,33 @@
             background: #1f2918;
             border: 2px solid #7d6f3d;
             box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        }
+
+        body.old-school .checkbox-container {
+            background: #2f331f;
+            border-color: #5f5a3f;
+            color: #e8d8a8;
+        }
+
+        body.old-school .checkbox-container:hover {
+            background: #3e4429;
+            border-color: #8f8a5f;
+        }
+
+        body.old-school .quote-display {
+            background: #252a1b;
+            border-left-color: #a08d53;
+            color: #f4ebc5;
+        }
+
+        body.old-school .button-group button {
+            background: #3a3e2d;
+            border-color: #7c6f47;
+            color: #e4d7b0;
+        }
+
+        body.old-school .button-group button:hover {
+            background: #514c32;
         }
 
         .top-nav {
@@ -168,6 +196,42 @@
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 18px 0 10px;
+        }
+
+        .mode-option {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 2px solid #d0d7ff;
+            background: #f8f9ff;
+            color: #2a3f7d;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .mode-option.active {
+            background: #667eea;
+            color: white;
+            border-color: #5d6fdf;
+        }
+
+        body.old-school .mode-option {
+            background: #3f422e;
+            border-color: #5e5b3a;
+            color: #e8d8a8;
+        }
+
+        body.old-school .mode-option.active {
+            background: #b79f5b;
+            color: #232112;
+            border-color: #d2c08d;
         }
 
         .quiz-btn {
@@ -329,6 +393,12 @@
             <button type="button" class="quiz-btn" id="quizBtn" disabled>Take Quiz</button>
         </div>
 
+        <div class="mode-selector" id="modeSelector">
+            <button type="button" class="mode-option active" data-mode="allCommands">All commands quiz</button>
+            <button type="button" class="mode-option" data-mode="chatters">Chatters quiz</button>
+            <button type="button" class="mode-option" data-mode="speed">Speed quiz</button>
+        </div>
+
         <div class="source-label" id="sourceLabel">Selected: Brown</div>
     </div>
 
@@ -345,6 +415,8 @@
         const errorMessage = document.getElementById('errorMessage');
         const sourceLabel = document.getElementById('sourceLabel');
         const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const modeSelector = document.getElementById('modeSelector');
+        let currentQuizMode = 'allCommands';
 
         // Map source names to GitHub URLs
         const sourceUrls = {
@@ -528,8 +600,26 @@
         // Quiz button listener
         quizBtn.addEventListener('click', () => {
             saveState();
-            window.location.href = 'quiz.html';
+            window.location.href = `quiz.html?mode=${currentQuizMode}`;
         });
+
+        function setQuizMode(mode) {
+            currentQuizMode = mode;
+            modeSelector.querySelectorAll('.mode-option').forEach(button => {
+                button.classList.toggle('active', button.dataset.mode === mode);
+            });
+        }
+
+        function buildModeSelector() {
+            modeSelector.addEventListener('click', event => {
+                const button = event.target.closest('.mode-option');
+                if (!button) return;
+                setQuizMode(button.dataset.mode);
+            });
+        }
+
+        buildModeSelector();
+        setQuizMode(currentQuizMode);
 
         themeToggleBtn.addEventListener('click', toggleTheme);
 
