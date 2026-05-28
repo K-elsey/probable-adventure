@@ -1,590 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quote Quiz</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #222;
-            padding: 20px;
-        }
-
-        body.old-school {
-            background: radial-gradient(circle at top left, #7d6b3d 0%, #1b2d1f 40%, #0c1a11 100%);
-            color: #f2e6c8;
-        }
-
-        .top-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 940px;
-            margin: 0 auto 20px;
-            padding: 12px 18px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        body.old-school .top-nav {
-            background: rgba(15, 18, 10, 0.88);
-            border-color: rgba(157, 143, 99, 0.4);
-        }
-
-        .nav-title {
-            font-size: 1.15em;
-            font-weight: 700;
-        }
-
-        .nav-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .theme-btn,
-        .mode-btn,
-        .next-btn,
-        .back-btn {
-            transition: all 0.2s ease;
-        }
-
-        .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
-            padding: 30px;
-            max-width: 940px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        body.old-school .container {
-            background: #1f2b18;
-            border: 2px solid #867148;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-        }
-
-        body.old-school .theme-btn,
-        body.old-school .next-btn,
-        body.old-school .back-btn {
-            background: #3c3f27;
-            border-color: #7e744a;
-            color: #f2e7b3;
-        }
-
-        body.old-school .theme-btn:hover,
-        body.old-school .next-btn:hover,
-        body.old-school .back-btn:hover {
-            background: #5c5a36;
-        }
-
-        .mode-menu {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-
-        .mode-btn {
-            padding: 12px 18px;
-            background: #f1f5ff;
-            border: 2px solid #d0d7ff;
-            border-radius: 999px;
-            color: #2a3f7d;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .mode-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #5d6fdf;
-        }
-
-        body.old-school .mode-btn {
-            background: #3f422e;
-            border-color: #5e5b3a;
-            color: #e8d8a8;
-        }
-
-        body.old-school .mode-btn.active {
-            background: linear-gradient(135deg, #7c682d 0%, #b79f5b 100%);
-            color: #232112;
-            border-color: #d2c08d;
-        }
-
-        .progress-panel {
-            margin-bottom: 22px;
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .session-info {
-            display: flex;
-            gap: 18px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .score-display,
-        .accuracy-display,
-        .timer-display {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #333;
-        }
-
-        body.old-school .score-display,
-        body.old-school .accuracy-display,
-        body.old-school .timer-display {
-            color: #f9eed1;
-        }
-
-        .timer-display {
-            font-size: 0.95rem;
-            min-width: 120px;
-            text-align: right;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            border-radius: 999px;
-            background: #e9ecef;
-            overflow: hidden;
-            margin-top: 12px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s ease;
-        }
-
-        .progress-dots {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .progress-dot {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #f1f3f5;
-            border: 2px solid #ced4da;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #6c757d;
-        }
-
-        .progress-dot.correct {
-            background: #28a745;
-            border-color: #1e7e34;
-            color: white;
-        }
-
-        .progress-dot.incorrect {
-            background: #dc3545;
-            border-color: #b02a37;
-            color: white;
-        }
-
-        body.old-school .progress-bar {
-            background: #3c3a2d;
-        }
-
-        body.old-school .progress-fill {
-            background: linear-gradient(90deg, #9c7b30 0%, #d8c47e 100%);
-        }
-
-        body.old-school .progress-dot {
-            background: #46432d;
-            border-color: #746b4c;
-            color: #d6c89b;
-        }
-
-        body.old-school .progress-dot.correct {
-            background: #4c7f3d;
-            border-color: #7bb162;
-        }
-
-        body.old-school .progress-dot.incorrect {
-            background: #702525;
-            border-color: #ad5b5b;
-        }
-
-        .quote-display {
-            background: #f8f9ff;
-            border-left: 4px solid #667eea;
-            padding: 25px;
-            border-radius: 12px;
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #1d253b;
-            text-align: center;
-            font-style: italic;
-            transition: background 0.3s ease;
-        }
-
-        .quote-display.loading::before {
-            content: "Loading quote...";
-            color: #7d8fa7;
-        }
-
-        body.old-school .quote-display {
-            background: #232b19;
-            border-left-color: #a68f4c;
-            color: #f8eec6;
-            font-style: normal;
-        }
-
-        .options-container {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(260px, 1fr));
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .option-btn {
-            padding: 16px 20px;
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 700;
-            transition: all 0.25s ease;
-            min-height: 62px;
-            text-align: center;
-            color: #1f2530;
-        }
-
-        .option-btn:hover {
-            background: #f2f5ff;
-            border-color: #667eea;
-            transform: translateY(-1px);
-        }
-
-        .option-btn.correct {
-            background: #28a745;
-            color: white;
-            border-color: #28a745;
-        }
-
-        .option-btn.incorrect {
-            background: #dc3545;
-            color: white;
-            border-color: #dc3545;
-        }
-
-        .typed-answer {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: minmax(220px, 1fr) auto;
-            gap: 12px;
-            align-items: stretch;
-        }
-
-        .typed-answer-input {
-            width: 100%;
-            min-height: 58px;
-            padding: 0 18px;
-            border: 2px solid #d7ddf3;
-            border-radius: 8px;
-            background: #ffffff;
-            color: #1f2530;
-            font-size: 1.05em;
-            font-weight: 700;
-            outline: none;
-        }
-
-        .typed-answer-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.14);
-        }
-
-        .typed-answer-input.correct {
-            border-color: #28a745;
-            background: #eefaf1;
-        }
-
-        .typed-answer-input.incorrect {
-            border-color: #dc3545;
-            background: #fff1f2;
-        }
-
-        .submit-answer-btn {
-            min-height: 58px;
-            padding: 0 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.22);
-        }
-
-        .submit-answer-btn:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 9px 20px rgba(102, 126, 234, 0.28);
-        }
-
-        .submit-answer-btn:disabled,
-        .typed-answer-input:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-        }
-
-        body.old-school .option-btn {
-            background: #2b321d;
-            border-color: #57664b;
-            color: #efe6bb;
-        }
-
-        body.old-school .option-btn:hover {
-            background: #3d4629;
-            border-color: #8c8b61;
-        }
-
-        body.old-school .option-btn.correct {
-            background: #3e7632;
-            border-color: #9bc17e;
-        }
-
-        body.old-school .option-btn.incorrect {
-            background: #8c2d2d;
-            border-color: #d16767;
-        }
-
-        body.old-school .typed-answer-input {
-            background: #2b321d;
-            border-color: #57664b;
-            color: #efe6bb;
-        }
-
-        body.old-school .typed-answer-input:focus {
-            border-color: #a68f4c;
-            box-shadow: 0 0 0 4px rgba(166, 143, 76, 0.18);
-        }
-
-        body.old-school .typed-answer-input.correct {
-            border-color: #9bc17e;
-            background: #263d1f;
-        }
-
-        body.old-school .typed-answer-input.incorrect {
-            border-color: #d16767;
-            background: #402121;
-        }
-
-        body.old-school .submit-answer-btn {
-            background: linear-gradient(135deg, #7c682d 0%, #b79f5b 100%);
-            color: #232112;
-        }
-
-        .theme-btn {
-            padding: 10px 16px;
-            background: #ffffff;
-            border: 2px solid #d0d7ff;
-            color: #2a3f7d;
-            border-radius: 999px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .theme-btn:hover {
-            background: #e9efff;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .next-btn,
-        .back-btn {
-            padding: 14px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.05em;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.25);
-        }
-
-        .next-btn:hover,
-        .back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 22px rgba(102, 126, 234, 0.3);
-        }
-
-        .next-btn:disabled,
-        .theme-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .back-btn {
-            background: #6c757d;
-            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
-        }
-
-        .result-message {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 1.2em;
-            font-weight: 700;
-        }
-
-        .result-message.correct {
-            color: #28a745;
-        }
-
-        .result-message.incorrect {
-            color: #dc3545;
-        }
-
-        .final-screen {
-            text-align: center;
-            margin: 30px 0;
-            padding: 22px 18px;
-            border-radius: 12px;
-            background: #f0f4ff;
-            border: 1px solid #d7e0ff;
-        }
-
-        body.old-school .final-screen {
-            background: rgba(40, 42, 28, 0.86);
-            border-color: #6f6b4a;
-        }
-
-        .final-title {
-            font-size: 1.4em;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-
-        .final-score,
-        .final-summary {
-            margin-bottom: 12px;
-            font-size: 1.05em;
-            color: #333;
-        }
-
-        body.old-school .final-score,
-        body.old-school .final-summary {
-            color: #f7e9c3;
-        }
-
-        .final-screen.hidden {
-            display: none;
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c00;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        @media (max-width: 800px) {
-            .container {
-                padding: 22px;
-            }
-
-            .mode-menu {
-                justify-content: center;
-            }
-
-            .progress-info {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .timer-display {
-                text-align: left;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .quote-display {
-                min-height: 100px;
-                font-size: 1em;
-                padding: 20px;
-            }
-
-            .options-container {
-                grid-template-columns: 1fr;
-            }
-
-            .option-btn {
-                padding: 14px 16px;
-            }
-
-            .typed-answer {
-                grid-template-columns: 1fr;
-            }
-
-            .top-nav,
-            .container {
-                padding-left: 16px;
-                padding-right: 16px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="quiz-page">
     <div class="top-nav">
         <div class="nav-title">Quote Quiz</div>
         <div class="nav-actions">
@@ -1183,14 +605,6 @@
 
             const dataList = document.createElement('datalist');
             dataList.id = 'chatterNameOptions';
-            chatterNames
-                .slice()
-                .sort((first, second) => first.localeCompare(second))
-                .forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    dataList.appendChild(option);
-                });
 
             const input = document.createElement('input');
             input.type = 'text';
@@ -1203,6 +617,24 @@
             submitButton.type = 'submit';
             submitButton.className = 'submit-answer-btn';
             submitButton.textContent = 'Submit';
+
+            function updateNameSuggestions() {
+                const searchText = input.value.trim().toLowerCase();
+                dataList.innerHTML = '';
+                if (searchText.length < 3) return;
+
+                chatterNames
+                    .slice()
+                    .sort((first, second) => first.localeCompare(second))
+                    .filter(name => name.toLowerCase().includes(searchText))
+                    .forEach(name => {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        dataList.appendChild(option);
+                    });
+            }
+
+            input.addEventListener('input', updateNameSuggestions);
 
             form.addEventListener('submit', event => {
                 event.preventDefault();
@@ -1238,7 +670,7 @@
         function handleTimeout() {
             hasAnswered = true;
             attempts += 1;
-            resultMessage.textContent = '⏱️ Time is up!';
+            resultMessage.textContent = 'â±ï¸ Time is up!';
             resultMessage.classList.add('incorrect');
             const buttons = optionsContainer.querySelectorAll('.option-btn');
             buttons.forEach(btn => {
@@ -1289,13 +721,13 @@
 
             if (isCorrect) {
                 score += 1;
-                resultMessage.textContent = '✅ Correct! +1 point';
+                resultMessage.textContent = 'âœ… Correct! +1 point';
                 resultMessage.classList.add('correct');
                 markProgress(true);
             } else {
                 resultMessage.textContent = modeType === 'speed'
-                    ? `❌ Incorrect! The right quote was highlighted.`
-                    : `❌ Incorrect! The correct answer is ${currentCorrectAnswer}`;
+                    ? `âŒ Incorrect! The right quote was highlighted.`
+                    : `âŒ Incorrect! The correct answer is ${currentCorrectAnswer}`;
                 resultMessage.classList.add('incorrect');
                 markProgress(false);
             }
