@@ -670,7 +670,7 @@
         function handleTimeout() {
             hasAnswered = true;
             attempts += 1;
-            resultMessage.textContent = 'â±ï¸ Time is up!';
+            resultMessage.textContent = 'Time is up!';
             resultMessage.classList.add('incorrect');
             const buttons = optionsContainer.querySelectorAll('.option-btn');
             buttons.forEach(btn => {
@@ -721,13 +721,13 @@
 
             if (isCorrect) {
                 score += 1;
-                resultMessage.textContent = 'âœ… Correct! +1 point';
+                resultMessage.textContent = 'Correct! +1 point';
                 resultMessage.classList.add('correct');
                 markProgress(true);
             } else {
                 resultMessage.textContent = modeType === 'speed'
-                    ? `âŒ Incorrect! The right quote was highlighted.`
-                    : `âŒ Incorrect! The correct answer is ${currentCorrectAnswer}`;
+                    ? `Incorrect! The right quote was highlighted.`
+                    : `Incorrect! The correct answer is ${currentCorrectAnswer}`;
                 resultMessage.classList.add('incorrect');
                 markProgress(false);
             }
