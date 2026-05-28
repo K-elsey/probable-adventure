@@ -312,6 +312,67 @@
             border-color: #dc3545;
         }
 
+        .typed-answer {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) auto;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .typed-answer-input {
+            width: 100%;
+            min-height: 58px;
+            padding: 0 18px;
+            border: 2px solid #d7ddf3;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1f2530;
+            font-size: 1.05em;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .typed-answer-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.14);
+        }
+
+        .typed-answer-input.correct {
+            border-color: #28a745;
+            background: #eefaf1;
+        }
+
+        .typed-answer-input.incorrect {
+            border-color: #dc3545;
+            background: #fff1f2;
+        }
+
+        .submit-answer-btn {
+            min-height: 58px;
+            padding: 0 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.22);
+        }
+
+        .submit-answer-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 9px 20px rgba(102, 126, 234, 0.28);
+        }
+
+        .submit-answer-btn:disabled,
+        .typed-answer-input:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
         body.old-school .option-btn {
             background: #2b321d;
             border-color: #57664b;
@@ -331,6 +392,32 @@
         body.old-school .option-btn.incorrect {
             background: #8c2d2d;
             border-color: #d16767;
+        }
+
+        body.old-school .typed-answer-input {
+            background: #2b321d;
+            border-color: #57664b;
+            color: #efe6bb;
+        }
+
+        body.old-school .typed-answer-input:focus {
+            border-color: #a68f4c;
+            box-shadow: 0 0 0 4px rgba(166, 143, 76, 0.18);
+        }
+
+        body.old-school .typed-answer-input.correct {
+            border-color: #9bc17e;
+            background: #263d1f;
+        }
+
+        body.old-school .typed-answer-input.incorrect {
+            border-color: #d16767;
+            background: #402121;
+        }
+
+        body.old-school .submit-answer-btn {
+            background: linear-gradient(135deg, #7c682d 0%, #b79f5b 100%);
+            color: #232112;
         }
 
         .theme-btn {
@@ -485,6 +572,10 @@
                 padding: 14px 16px;
             }
 
+            .typed-answer {
+                grid-template-columns: 1fr;
+            }
+
             .top-nav,
             .container {
                 padding-left: 16px;
@@ -550,6 +641,7 @@
         let questionTimer = null;
         let countdownInterval = null;
         let availableNames = ['Jaae', 'Sean'];
+        let chatterNames = [];
 
         const quoteDisplay = document.getElementById('quoteDisplay');
         const optionsContainer = document.getElementById('optionsContainer');
@@ -581,12 +673,96 @@
             quote: 'Sean'
         };
 
+        const csvMonthNames = {
+            january: 'Jan',
+            jan: 'Jan',
+            february: 'Feb',
+            feb: 'Feb',
+            march: 'Mar',
+            mar: 'Mar',
+            april: 'Apr',
+            apr: 'Apr',
+            may: 'May',
+            june: 'Jun',
+            jun: 'Jun',
+            july: 'Jul',
+            jul: 'Jul',
+            august: 'Aug',
+            aug: 'Aug',
+            september: 'Sep',
+            sept: 'Sep',
+            sep: 'Sep',
+            october: 'Oct',
+            oct: 'Oct',
+            november: 'Nov',
+            nov: 'Nov',
+            december: 'Dec',
+            dec: 'Dec'
+        };
+        const monthPattern = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December';
+
+        function parseDelimitedRow(row, delimiter) {
+            const cells = [];
+            let cell = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < row.length; i += 1) {
+                const char = row[i];
+                const nextChar = row[i + 1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        cell += '"';
+                        i += 1;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === delimiter && !inQuotes) {
+                    cells.push(cell.trim());
+                    cell = '';
+                } else {
+                    cell += char;
+                }
+            }
+
+            cells.push(cell.trim());
+            return cells;
+        }
+
+        function normalizeCsvMonth(month) {
+            return csvMonthNames[month.toLowerCase()] || month;
+        }
+
+        function recoverMissingCsvMetadata(quoteText) {
+            const dashMatch = quoteText.match(new RegExp(`^(.*?)\\s*-\\s*([A-Za-z0-9][A-Za-z0-9 ]*?)\\s+(${monthPattern})(?:\\s*(\\d{2,4}))?$`, 'i'));
+            if (dashMatch) {
+                return {
+                    quoteText: dashMatch[1].trim(),
+                    user: dashMatch[2].replace(/\s+/g, ' ').trim(),
+                    month: normalizeCsvMonth(dashMatch[3].trim()),
+                    year: dashMatch[4] ? dashMatch[4].trim().slice(-2) : ''
+                };
+            }
+
+            const commaNameMatch = quoteText.match(/^(.*?),\s*([A-Za-z0-9][A-Za-z0-9 ]{1,30})$/);
+            if (commaNameMatch) {
+                return {
+                    quoteText: commaNameMatch[1].trim(),
+                    user: commaNameMatch[2].replace(/\s+/g, ' ').trim(),
+                    month: '',
+                    year: ''
+                };
+            }
+
+            return { quoteText, user: '', month: '', year: '' };
+        }
+
         function parseCsvText(text) {
             const rows = text.split(/\r?\n/).map(row => row.trim()).filter(row => row.length > 0);
             if (rows.length === 0) return [];
 
             const delimiter = rows[0].includes('\t') ? '\t' : ',';
-            const header = rows[0].split(delimiter).map(cell => cell.trim().replace(/^"|"$/g, ''));
+            const header = parseDelimitedRow(rows[0], delimiter);
             const quoteIndex = header.findIndex(cell => /quote/i.test(cell));
             const nameIndex = header.findIndex(cell => /user|name/i.test(cell));
             const monthIndex = header.findIndex(cell => /month/i.test(cell));
@@ -594,11 +770,20 @@
             if (quoteIndex < 0) return [];
 
             return rows.slice(1).map(row => {
-                const cells = row.split(delimiter).map(cell => cell.trim().replace(/^"|"$/g, ''));
-                const quoteText = cells[quoteIndex] || '';
-                const user = (nameIndex >= 0 ? cells[nameIndex] : '').replace(/\s+/g, ' ').trim();
-                const month = monthIndex >= 0 ? cells[monthIndex].trim() : '';
-                const year = yearIndex >= 0 ? cells[yearIndex].trim() : '';
+                const cells = parseDelimitedRow(row, delimiter);
+                let quoteText = cells[quoteIndex] || '';
+                let user = (nameIndex >= 0 ? cells[nameIndex] || '' : '').replace(/\s+/g, ' ').trim();
+                let month = monthIndex >= 0 ? (cells[monthIndex] || '').trim() : '';
+                let year = yearIndex >= 0 ? (cells[yearIndex] || '').trim() : '';
+
+                if (!user) {
+                    const recovered = recoverMissingCsvMetadata(quoteText);
+                    quoteText = recovered.quoteText;
+                    user = recovered.user;
+                    month = recovered.month;
+                    year = recovered.year;
+                }
+
                 const suffixParts = [];
                 if (user) suffixParts.push(user);
                 if (month) suffixParts.push(month);
@@ -614,6 +799,12 @@
                 label: 'Chatters quiz',
                 sources: ['brown'],
                 type: 'multipleChoice'
+            },
+            chattersHard: {
+                id: 'chattersHard',
+                label: 'Chatters Hard',
+                sources: ['brown'],
+                type: 'textEntry'
             },
             allCommands: {
                 id: 'allCommands',
@@ -631,8 +822,11 @@
         };
 
         function extractChatName(quote) {
-            const monthMatch = quote.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2,4})$/);
-            if (!monthMatch) return null;
+            const monthMatch = quote.match(new RegExp(`(${monthPattern})(?:\\s+\\d{2,4})?$`, 'i'));
+            if (!monthMatch) {
+                const suffixMatch = quote.match(/\s-\s([A-Za-z0-9][A-Za-z0-9 ]*)$/);
+                return suffixMatch ? suffixMatch[1].replace(/\s+/g, ' ').trim() : null;
+            }
 
             const beforeMonth = quote.slice(0, monthMatch.index).trim();
             const afterDash = beforeMonth.includes('-')
@@ -657,6 +851,16 @@
 
         function normalizeName(name) {
             return name ? name.replace(/\s+/g, '') : name;
+        }
+
+        function compareNames(firstName, secondName) {
+            return normalizeName(firstName || '').toLowerCase() === normalizeName(secondName || '').toLowerCase();
+        }
+
+        function addUniqueName(list, name) {
+            if (name && !list.some(existing => compareNames(existing, name))) {
+                list.push(name);
+            }
         }
 
         function loadTheme() {
@@ -804,9 +1008,8 @@
                         const extracted = extractChatName(quote);
                         if (extracted) {
                             const normalized = normalizeName(extracted);
-                            if (!availableNames.includes(normalized)) {
-                                availableNames.push(normalized);
-                            }
+                            addUniqueName(availableNames, normalized);
+                            addUniqueName(chatterNames, normalized);
                         }
                     });
                 }
@@ -842,6 +1045,8 @@
             try {
                 if (mode.type === 'speed') {
                     await renderSpeedQuestion(mode);
+                } else if (mode.type === 'textEntry') {
+                    await renderTextEntryQuestion(mode);
                 } else {
                     await renderMultipleChoiceQuestion(mode);
                 }
@@ -853,8 +1058,9 @@
 
         function getCleanQuoteText(rawQuote) {
             let text = rawQuote;
-            text = text.replace(/\s*-\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '');
-            text = text.replace(/\s*[A-Za-z0-9][A-Za-z0-9 ]*\s+[A-Za-z]{3}\s+\d{2,4}$/, '');
+            text = text.replace(new RegExp(`\\s*-\\s*[A-Za-z0-9][A-Za-z0-9 ]*\\s+(${monthPattern})\\s+\\d{2,4}$`, 'i'), '');
+            text = text.replace(new RegExp(`\\s*-\\s*[A-Za-z0-9][A-Za-z0-9 ]*\\s+(${monthPattern})$`, 'i'), '');
+            text = text.replace(/\s*-\s*[A-Za-z0-9][A-Za-z0-9 ]*$/, '');
             return text.trim();
         }
 
@@ -868,7 +1074,10 @@
             currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
             if (currentSource === 'brown') {
                 const extractedName = extractChatName(currentQuote);
-                currentCorrectAnswer = normalizeName(extractedName || 'Chat');
+                currentCorrectAnswer = normalizeName(extractedName);
+                if (!currentCorrectAnswer) {
+                    throw new Error('Selected quote is missing a chatter name');
+                }
             } else {
                 currentCorrectAnswer = currentSource === 'jaae' ? 'Jaae' : 'Sean';
             }
@@ -880,13 +1089,29 @@
             generateOptions(mode.type, options, currentCorrectAnswer);
         }
 
+        async function renderTextEntryQuestion(mode) {
+            currentSource = 'brown';
+            const quotes = await fetchQuotes(currentSource);
+            const validQuotes = quotes.filter(quote => extractChatName(quote));
+            if (validQuotes.length === 0 || chatterNames.length === 0) {
+                throw new Error('No chatter names available');
+            }
+
+            currentQuote = validQuotes[Math.floor(Math.random() * validQuotes.length)];
+            currentCorrectAnswer = normalizeName(extractChatName(currentQuote));
+            quoteDisplay.textContent = `"${getCleanQuoteText(currentQuote)}"`;
+            quoteDisplay.classList.remove('loading');
+            generateTextAnswer();
+        }
+
         function buildNameOptions(correctName) {
-            const pool = Array.from(new Set(availableNames));
-            if (!pool.includes(correctName)) {
+            const pool = Array.from(new Set(availableNames))
+                .filter(name => !compareNames(name, correctName));
+            if (correctName) {
                 pool.push(correctName);
             }
 
-            const wrongOptions = pool.filter(name => name !== correctName);
+            const wrongOptions = pool.filter(name => !compareNames(name, correctName));
             const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5);
             const options = [correctName];
 
@@ -895,7 +1120,7 @@
             }
 
             while (options.length < 4) {
-                const fallback = ['Jaae', 'Sean', 'Chat'].find(name => !options.includes(name));
+                const fallback = ['Jaae', 'Sean'].find(name => !options.includes(name));
                 if (!fallback) break;
                 options.push(fallback);
             }
@@ -913,7 +1138,7 @@
             currentCorrectAnswer = names[Math.floor(Math.random() * names.length)];
             const correctQuotes = quotes.filter(q => normalizeName(extractChatName(q)) === currentCorrectAnswer);
             if (correctQuotes.length === 0) {
-                currentCorrectAnswer = normalizeName(extractChatName(quotes[0])) || 'Chat';
+                currentCorrectAnswer = normalizeName(extractChatName(quotes[0]));
             }
 
             const chosenCorrectQuote = correctQuotes.length > 0
@@ -947,6 +1172,46 @@
                 button.addEventListener('click', () => checkAnswer(option));
                 optionsContainer.appendChild(button);
             });
+        }
+
+        function generateTextAnswer() {
+            optionsContainer.innerHTML = '';
+
+            const form = document.createElement('form');
+            form.className = 'typed-answer';
+            form.autocomplete = 'off';
+
+            const dataList = document.createElement('datalist');
+            dataList.id = 'chatterNameOptions';
+            chatterNames
+                .slice()
+                .sort((first, second) => first.localeCompare(second))
+                .forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    dataList.appendChild(option);
+                });
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'typed-answer-input';
+            input.setAttribute('list', dataList.id);
+            input.setAttribute('aria-label', 'Chatter name');
+            input.placeholder = 'Chatter name';
+
+            const submitButton = document.createElement('button');
+            submitButton.type = 'submit';
+            submitButton.className = 'submit-answer-btn';
+            submitButton.textContent = 'Submit';
+
+            form.addEventListener('submit', event => {
+                event.preventDefault();
+                checkAnswer(input.value.trim());
+            });
+
+            form.append(input, submitButton, dataList);
+            optionsContainer.appendChild(form);
+            input.focus();
         }
 
         function beginCountdown(seconds) {
@@ -996,7 +1261,11 @@
             hasAnswered = true;
             clearTimers();
             attempts += 1;
-            const isCorrect = selectedOption === currentCorrectAnswer || selectedOption === currentQuote;
+            const modeType = quizModes[currentModeId].type;
+            const isTextEntry = modeType === 'textEntry';
+            const isCorrect = isTextEntry
+                ? compareNames(selectedOption, currentCorrectAnswer)
+                : selectedOption === currentCorrectAnswer || selectedOption === currentQuote;
             const buttons = optionsContainer.querySelectorAll('.option-btn');
             buttons.forEach(btn => {
                 if (btn.textContent === currentCorrectAnswer || btn.textContent === currentQuote) {
@@ -1006,13 +1275,25 @@
                 }
             });
 
+            if (isTextEntry) {
+                const input = optionsContainer.querySelector('.typed-answer-input');
+                const submitButton = optionsContainer.querySelector('.submit-answer-btn');
+                if (input) {
+                    input.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    input.disabled = true;
+                }
+                if (submitButton) {
+                    submitButton.disabled = true;
+                }
+            }
+
             if (isCorrect) {
                 score += 1;
                 resultMessage.textContent = '✅ Correct! +1 point';
                 resultMessage.classList.add('correct');
                 markProgress(true);
             } else {
-                resultMessage.textContent = quizModes[currentModeId].type === 'speed'
+                resultMessage.textContent = modeType === 'speed'
                     ? `❌ Incorrect! The right quote was highlighted.`
                     : `❌ Incorrect! The correct answer is ${currentCorrectAnswer}`;
                 resultMessage.classList.add('incorrect');
