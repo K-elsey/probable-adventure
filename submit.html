@@ -20,8 +20,8 @@
 
         <div class="hint-panel">
             <h2>How it works</h2>
-            <p>Enter the quote, name, month, and year. The page will format the line to match the Brown quote format.</p>
-            <p>Then open a GitHub issue to request the quote be added to <strong>ChatterQuotes.csv</strong>.</p>
+            <p>Enter the quote and name. The page will use the current month and year for review.</p>
+            <p>Open a GitHub issue, then add the <strong>approved-quote</strong> label to append it to <strong>ChatterQuotes.csv</strong>.</p>
         </div>
 
         <div class="form-grid">
@@ -32,27 +32,6 @@
             <div class="field">
                 <label for="userName">User Name</label>
                 <input id="userName" type="text" placeholder="Example: Jaae" />
-            </div>
-            <div class="field">
-                <label for="monthSelect">Month</label>
-                <select id="monthSelect">
-                    <option value="Jan">Jan</option>
-                    <option value="Feb">Feb</option>
-                    <option value="Mar">Mar</option>
-                    <option value="Apr">Apr</option>
-                    <option value="May">May</option>
-                    <option value="Jun">Jun</option>
-                    <option value="Jul">Jul</option>
-                    <option value="Aug">Aug</option>
-                    <option value="Sep">Sep</option>
-                    <option value="Oct">Oct</option>
-                    <option value="Nov">Nov</option>
-                    <option value="Dec">Dec</option>
-                </select>
-            </div>
-            <div class="field">
-                <label for="yearInput">Year</label>
-                <input id="yearInput" type="number" step="1" min="2000" max="2099" placeholder="2026" />
             </div>
         </div>
 
@@ -71,8 +50,6 @@
     <script>
         const quoteText = document.getElementById('quoteText');
         const userName = document.getElementById('userName');
-        const monthSelect = document.getElementById('monthSelect');
-        const yearInput = document.getElementById('yearInput');
         const previewLine = document.getElementById('previewLine');
         const previewBtn = document.getElementById('previewBtn');
         const copyLineBtn = document.getElementById('copyLineBtn');
@@ -97,31 +74,58 @@
         }
 
         function buildQuoteLine() {
-            const quote = quoteText.value.trim();
-            const name = userName.value.trim();
-            const month = monthSelect.value;
-            const year = yearInput.value.trim();
-
-            if (!quote || !name || !month || !year) {
+            const entry = buildQuoteEntry();
+            if (!entry) {
                 return '';
             }
 
-            return `${quote} - ${name} ${month} ${year}`;
+            return `${entry.quote} - ${entry.name} ${entry.month} ${entry.year}`;
+        }
+
+        function buildQuoteEntry() {
+            const quote = quoteText.value.trim();
+            const name = userName.value.trim();
+            const now = new Date();
+            const month = now.toLocaleString('en-GB', { month: 'short' });
+            const year = String(now.getFullYear()).slice(-2);
+
+            if (!quote || !name) {
+                return null;
+            }
+
+            return {
+                quote: quote.replace(/\s+/g, ' '),
+                name: name.replace(/\s+/g, ' '),
+                month,
+                year
+            };
+        }
+
+        function buildIssueBody(entry, formatted) {
+            if (!entry) {
+                return 'Please add a new ChatterQuotes entry.';
+            }
+
+            return `Please review and approve this Chatter quote.
+
+Formatted line:
+${formatted}
+
+Add the \`approved-quote\` label to this issue to automatically append it to ChatterQuotes.csv.
+
+\`\`\`chatterquote-json
+${JSON.stringify(entry, null, 2)}
+\`\`\`
+
+Repository: https://github.com/K-elsey/probable-adventure
+File: ChatterQuotes.csv`;
         }
 
         function updatePreview() {
+            const entry = buildQuoteEntry();
             const formatted = buildQuoteLine();
             previewLine.textContent = formatted || 'Please fill in all fields to preview the formatted line.';
-            const body = formatted
-                ? encodeURIComponent(`Please add the following line to ChatterQuotes.csv:
-
-${formatted}
-
-Repository: https://github.com/K-elsey/probable-adventure
-File: ChatterQuotes.csv
-
-Thanks!`)
-                : encodeURIComponent('Please add a new ChatterQuotes entry.');
+            const body = encodeURIComponent(buildIssueBody(entry, formatted));
             issueBtn.href = `https://github.com/K-elsey/probable-adventure/issues/new?title=Add+ChatterQuote&body=${body}`;
         }
 

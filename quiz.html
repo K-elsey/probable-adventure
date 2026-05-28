@@ -239,7 +239,8 @@
                 label: 'Speed quiz',
                 sources: ['brown'],
                 type: 'speed',
-                timeLimit: 5
+                timeLimit: 10,
+                maxQuoteLength: 123
             }
         };
 
@@ -486,6 +487,10 @@
             return text.trim();
         }
 
+        function isShortEnoughForSpeed(quote, maxLength) {
+            return getCleanQuoteText(quote).length <= maxLength;
+        }
+
         async function renderMultipleChoiceQuestion(mode) {
             currentSource = mode.sources[Math.floor(Math.random() * mode.sources.length)];
             const quotes = await fetchQuotes(currentSource);
@@ -552,21 +557,14 @@
 
         async function renderSpeedQuestion(mode) {
             const quotes = await fetchQuotes('brown');
-            if (quotes.length === 0 || availableNames.length === 0) {
+            const speedQuotes = quotes.filter(quote => extractChatName(quote) && isShortEnoughForSpeed(quote, mode.maxQuoteLength));
+            if (speedQuotes.length < 2) {
                 throw new Error('No speed quiz data available');
             }
 
-            const names = availableNames.slice();
-            currentCorrectAnswer = names[Math.floor(Math.random() * names.length)];
-            const correctQuotes = quotes.filter(q => normalizeName(extractChatName(q)) === currentCorrectAnswer);
-            if (correctQuotes.length === 0) {
-                currentCorrectAnswer = normalizeName(extractChatName(quotes[0]));
-            }
-
-            const chosenCorrectQuote = correctQuotes.length > 0
-                ? correctQuotes[Math.floor(Math.random() * correctQuotes.length)]
-                : quotes[Math.floor(Math.random() * quotes.length)];
-            const wrongQuote = selectDistractorQuote(quotes, chosenCorrectQuote);
+            const chosenCorrectQuote = speedQuotes[Math.floor(Math.random() * speedQuotes.length)];
+            currentCorrectAnswer = normalizeName(extractChatName(chosenCorrectQuote));
+            const wrongQuote = selectDistractorQuote(speedQuotes, chosenCorrectQuote);
 
             currentQuote = getCleanQuoteText(chosenCorrectQuote);
             quoteDisplay.textContent = `Which quote was said by ${currentCorrectAnswer}?`;
