@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a Quote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            color: #222;
+        }
+
+        body.old-school {
+            background: radial-gradient(circle at top left, #7d6b3d 0%, #1b2d1f 40%, #0c1a11 100%);
+            color: #f3e8c8;
+        }
+
+        .top-nav {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.18);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        body.old-school .top-nav {
+            background: rgba(15, 18, 10, 0.88);
+            border-color: rgba(157, 143, 99, 0.4);
+        }
+
+        .nav-title {
+            font-size: 1em;
+            font-weight: 700;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-link,
+        .theme-btn,
+        .submit-btn,
+        .copy-btn,
+        .issue-btn,
+        .preview-btn {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 2px solid #d0d7ff;
+            background: #ffffff;
+            color: #2a3f7d;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-link:hover,
+        .theme-btn:hover,
+        .submit-btn:hover,
+        .copy-btn:hover,
+        .issue-btn:hover,
+        .preview-btn:hover {
+            background: #e9efff;
+        }
+
+        body.old-school .nav-link,
+        body.old-school .theme-btn,
+        body.old-school .submit-btn,
+        body.old-school .copy-btn,
+        body.old-school .issue-btn,
+        body.old-school .preview-btn {
+            background: #3f422e;
+            border-color: #5e5b3a;
+            color: #e8d8a8;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+            padding: 36px;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        body.old-school .container {
+            background: #1f2918;
+            border: 2px solid #7d6f3d;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 18px;
+            font-size: 2.25em;
+        }
+
+        body.old-school h1 {
+            color: #f3e8c8;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 700;
+            color: #333;
+        }
+
+        body.old-school label {
+            color: #f3e8c8;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 2px solid #d7dfe8;
+            background: #f9fbff;
+            font-size: 1rem;
+            color: #1f2530;
+            resize: vertical;
+        }
+
+        body.old-school input,
+        body.old-school textarea,
+        body.old-school select {
+            border-color: #5d5a43;
+            background: #252816;
+            color: #f3e8c8;
+        }
+
+        textarea {
+            min-height: 120px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-panel,
+        .hint-panel {
+            padding: 20px;
+            border-radius: 14px;
+            background: #f3f6ff;
+            border: 1px solid #d7e0ff;
+            margin-bottom: 18px;
+        }
+
+        body.old-school .preview-panel,
+        body.old-school .hint-panel {
+            background: rgba(40, 42, 28, 0.9);
+            border-color: #6f6b4a;
+        }
+
+        .preview-panel h2,
+        .hint-panel h2 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .preview-line {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #1f2530;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        body.old-school .preview-line {
+            color: #f5e9bf;
+        }
+
+        .hint-panel p {
+            color: #4f5566;
+            margin-bottom: 8px;
+        }
+
+        body.old-school .hint-panel p {
+            color: #d8cfa6;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 22px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <div class="nav-title">Submit a Quote</div>
+        <div class="nav-actions">
+            <a href="index.html" class="nav-link">Home</a>
+            <button type="button" class="theme-btn" id="themeToggleBtn">Old School</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Submit a Chatter Quote</h1>
+
+        <div class="hint-panel">
+            <h2>How it works</h2>
+            <p>Enter the quote, name, month, and year. The page will format the line to match the Brown quote format.</p>
+            <p>Then open a GitHub issue to request the quote be added to <strong>ChatterQuotes.csv</strong>.</p>
+        </div>
+
+        <div class="form-grid">
+            <div class="field">
+                <label for="quoteText">Quote</label>
+                <textarea id="quoteText" placeholder="Paste the quote text here"></textarea>
+            </div>
+            <div class="field">
+                <label for="userName">User Name</label>
+                <input id="userName" type="text" placeholder="Example: Jaae" />
+            </div>
+            <div class="field">
+                <label for="monthSelect">Month</label>
+                <select id="monthSelect">
+                    <option value="Jan">Jan</option>
+                    <option value="Feb">Feb</option>
+                    <option value="Mar">Mar</option>
+                    <option value="Apr">Apr</option>
+                    <option value="May">May</option>
+                    <option value="Jun">Jun</option>
+                    <option value="Jul">Jul</option>
+                    <option value="Aug">Aug</option>
+                    <option value="Sep">Sep</option>
+                    <option value="Oct">Oct</option>
+                    <option value="Nov">Nov</option>
+                    <option value="Dec">Dec</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="yearInput">Year</label>
+                <input id="yearInput" type="number" step="1" min="2000" max="2099" placeholder="2026" />
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="submit-btn" id="previewBtn">Preview Quote Line</button>
+            <button type="button" class="copy-btn" id="copyLineBtn">Copy Line</button>
+            <a href="#" class="issue-btn" id="issueBtn" target="_blank">Open GitHub Issue</a>
+        </div>
+
+        <div class="preview-panel">
+            <h2>Formatted Quote Line</h2>
+            <div class="preview-line" id="previewLine">Fill in the fields and click "Preview Quote Line".</div>
+        </div>
+    </div>
+
+    <script>
+        const quoteText = document.getElementById('quoteText');
+        const userName = document.getElementById('userName');
+        const monthSelect = document.getElementById('monthSelect');
+        const yearInput = document.getElementById('yearInput');
+        const previewLine = document.getElementById('previewLine');
+        const previewBtn = document.getElementById('previewBtn');
+        const copyLineBtn = document.getElementById('copyLineBtn');
+        const issueBtn = document.getElementById('issueBtn');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+        function loadTheme() {
+            const storedTheme = localStorage.getItem('quizTheme');
+            if (storedTheme === 'old-school') {
+                document.body.classList.add('old-school');
+                themeToggleBtn.textContent = 'Classic';
+            } else {
+                document.body.classList.remove('old-school');
+                themeToggleBtn.textContent = 'Old School';
+            }
+        }
+
+        function toggleTheme() {
+            const nowOldSchool = document.body.classList.toggle('old-school');
+            localStorage.setItem('quizTheme', nowOldSchool ? 'old-school' : 'default');
+            themeToggleBtn.textContent = nowOldSchool ? 'Classic' : 'Old School';
+        }
+
+        function buildQuoteLine() {
+            const quote = quoteText.value.trim();
+            const name = userName.value.trim();
+            const month = monthSelect.value;
+            const year = yearInput.value.trim();
+
+            if (!quote || !name || !month || !year) {
+                return '';
+            }
+
+            return `${quote} - ${name} ${month} ${year}`;
+        }
+
+        function updatePreview() {
+            const formatted = buildQuoteLine();
+            previewLine.textContent = formatted || 'Please fill in all fields to preview the formatted line.';
+            const body = formatted
+                ? encodeURIComponent(`Please add the following line to ChatterQuotes.csv:
+
+${formatted}
+
+Repository: https://github.com/K-elsey/probable-adventure
+File: ChatterQuotes.csv
+
+Thanks!`)
+                : encodeURIComponent('Please add a new ChatterQuotes entry.');
+            issueBtn.href = `https://github.com/K-elsey/probable-adventure/issues/new?title=Add+ChatterQuote&body=${body}`;
+        }
+
+        previewBtn.addEventListener('click', updatePreview);
+
+        copyLineBtn.addEventListener('click', () => {
+            const formatted = buildQuoteLine();
+            if (!formatted) {
+                alert('Please fill in all fields first.');
+                return;
+            }
+            navigator.clipboard.writeText(formatted).then(() => {
+                copyLineBtn.textContent = 'Copied!';
+                setTimeout(() => copyLineBtn.textContent = 'Copy Line', 2000);
+            });
+        });
+
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        loadTheme();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePreview();
+        });
+    </script>
+</body>
+</html>

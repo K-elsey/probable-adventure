@@ -84,7 +84,14 @@
             font-weight: 700;
         }
 
-        .theme-btn {
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-btn,
+        .nav-link {
             padding: 10px 16px;
             background: #ffffff;
             border: 2px solid #d0d7ff;
@@ -92,9 +99,14 @@
             border-radius: 999px;
             cursor: pointer;
             font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .theme-btn:hover {
+        .theme-btn:hover,
+        .nav-link:hover {
             background: #e9efff;
         }
 
@@ -360,7 +372,10 @@
 <body>
     <div class="top-nav">
         <div class="nav-title">Quote Generator</div>
-        <button type="button" class="theme-btn" id="themeToggleBtn">Old School</button>
+        <div class="nav-actions">
+            <a href="submit.html" class="nav-link">Submit Quote</a>
+            <button type="button" class="theme-btn" id="themeToggleBtn">Old School</button>
+        </div>
     </div>
     <div class="container">
         <h1>✨ Quote Generator ✨</h1>
@@ -420,7 +435,7 @@
 
         // Map source names to GitHub URLs
         const sourceUrls = {
-            brown: 'https://raw.githubusercontent.com/K-elsey/probable-adventure/main/Brown',
+            brown: 'https://raw.githubusercontent.com/K-elsey/probable-adventure/refs/heads/main/ChatterQuotes.csv',
             jaae: 'https://raw.githubusercontent.com/K-elsey/probable-adventure/main/Jaae',
             quote: 'https://raw.githubusercontent.com/K-elsey/probable-adventure/main/Quote'
         };
@@ -430,6 +445,33 @@
             jaae: 'Jaae',
             quote: 'Sean'
         };
+
+        function parseCsvText(text) {
+            const rows = text.split(/\r?\n/).map(row => row.trim()).filter(row => row.length > 0);
+            if (rows.length === 0) return [];
+
+            const delimiter = rows[0].includes('\t') ? '\t' : ',';
+            const header = rows[0].split(delimiter).map(cell => cell.trim().replace(/^"|"$/g, ''));
+            const quoteIndex = header.findIndex(cell => /quote/i.test(cell));
+            const nameIndex = header.findIndex(cell => /user|name/i.test(cell));
+            const monthIndex = header.findIndex(cell => /month/i.test(cell));
+            const yearIndex = header.findIndex(cell => /year/i.test(cell));
+            if (quoteIndex < 0) return [];
+
+            return rows.slice(1).map(row => {
+                const cells = row.split(delimiter).map(cell => cell.trim().replace(/^"|"$/g, ''));
+                const quoteText = cells[quoteIndex] || '';
+                const user = (nameIndex >= 0 ? cells[nameIndex] : '').replace(/\s+/g, ' ').trim();
+                const month = monthIndex >= 0 ? cells[monthIndex].trim() : '';
+                const year = yearIndex >= 0 ? cells[yearIndex].trim() : '';
+                const suffixParts = [];
+                if (user) suffixParts.push(user);
+                if (month) suffixParts.push(month);
+                if (year) suffixParts.push(year);
+                const suffix = suffixParts.length ? ` - ${suffixParts.join(' ')}` : '';
+                return `${quoteText}${suffix}`.trim();
+            }).filter(line => line.length > 0);
+        }
 
         // Update selected sources and UI
         function updateSelectedSources() {
@@ -542,10 +584,12 @@
                     throw new Error(`Failed to fetch from ${source}`);
                 }
                 const text = await response.text();
-                const quotes = text
-                    .split(';')
-                    .map(q => q.trim())
-                    .filter(q => q.length > 0);
+                const quotes = source === 'brown'
+                    ? parseCsvText(text)
+                    : text
+                        .split(';')
+                        .map(q => q.trim())
+                        .filter(q => q.length > 0);
                 
                 quotesCache[source] = quotes;
                 return quotes;
