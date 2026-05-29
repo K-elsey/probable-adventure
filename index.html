@@ -191,7 +191,10 @@
 
         function loadTheme() {
             const storedTheme = localStorage.getItem('quizTheme');
-            if (storedTheme === 'old-school') {
+            const prefersOldSchool = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const useOldSchool = storedTheme ? storedTheme === 'old-school' : prefersOldSchool;
+
+            if (useOldSchool) {
                 document.body.classList.add('old-school');
                 themeToggleBtn.textContent = 'Classic';
             } else {
