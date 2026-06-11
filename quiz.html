@@ -478,7 +478,7 @@
                 }
             } catch (error) {
                 quoteDisplay.textContent = 'Error loading question';
-                quoteDisplay.classList.add('loading');
+                quoteDisplay.classList.remove('loading');
             }
         }
 
@@ -501,21 +501,23 @@
                 throw new Error('No quotes available');
             }
 
-            currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
             if (currentSource === 'brown') {
-                const extractedName = extractChatName(currentQuote);
-                currentCorrectAnswer = normalizeName(extractedName);
-                if (!currentCorrectAnswer) {
-                    throw new Error('Selected quote is missing a chatter name');
+                const validQuotes = quotes.filter(q => extractChatName(q));
+                if (validQuotes.length === 0) {
+                    throw new Error('No quotes with chatter names available');
                 }
+                currentQuote = validQuotes[Math.floor(Math.random() * validQuotes.length)];
+                currentCorrectAnswer = normalizeName(extractChatName(currentQuote));
             } else {
+                currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
                 currentCorrectAnswer = currentSource === 'jaae' ? 'Jaae' : 'Sean';
             }
 
             const displayQuote = currentSource === 'brown' ? getCleanQuoteText(currentQuote) : currentQuote;
             quoteDisplay.textContent = `"${displayQuote}"`;
             quoteDisplay.classList.remove('loading');
-            const options = buildNameOptions(currentCorrectAnswer);
+            const namePool = mode.id === 'chatters' ? chatterNames : availableNames;
+            const options = buildNameOptions(currentCorrectAnswer, namePool);
             generateOptions(mode.type, options, currentCorrectAnswer);
         }
 
@@ -534,25 +536,19 @@
             generateTextAnswer();
         }
 
-        function buildNameOptions(correctName) {
-            const pool = Array.from(new Set(availableNames))
-                .filter(name => !compareNames(name, correctName));
-            if (correctName) {
-                pool.push(correctName);
-            }
-
-            const wrongOptions = pool.filter(name => !compareNames(name, correctName));
-            const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5);
+        function buildNameOptions(correctName, pool) {
+            const sourcePool = Array.from(new Set(pool || availableNames));
+            const wrongOptions = sourcePool.filter(name => !compareNames(name, correctName));
+            const shuffledWrong = wrongOptions.slice().sort(() => Math.random() - 0.5);
             const options = [correctName];
 
             for (let i = 0; i < 3 && i < shuffledWrong.length; i += 1) {
                 options.push(shuffledWrong[i]);
             }
 
-            while (options.length < 4) {
-                const fallback = ['Jaae', 'Sean'].find(name => !options.includes(name));
-                if (!fallback) break;
-                options.push(fallback);
+            if (options.length < 4 && pool !== chatterNames) {
+                const fallback = ['Jaae', 'Sean'].find(name => !options.some(o => compareNames(o, name)));
+                if (fallback) options.push(fallback);
             }
 
             return options.sort(() => Math.random() - 0.5);
